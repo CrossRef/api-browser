@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <meta name='description' content=''>
+    <meta name='author' content=''>
+    <!-- TODO -->
+    <title>CrossRef API Browser</title>
+    <link href='./dist/bootstrap/css/bootstrap.min.css' rel='stylesheet'>
+    <link href='./navbar-fixed-top.css' rel='stylesheet'>
+    <link href='./main.css' rel='stylesheet'>
+  </head>
+  <body>
+    <script src='./dist/react/react.js'></script>
+    <script src='./dist/react/JSXTransformer.js'></script>
+    <script src='./dist/jquery/dist/jquery.min.js'></script>
+
+    <nav class='navbar navbar-default navbar-fixed-top' role='navigation'>
+      <div class='container'>
+        <div class='navbar-header'>
+          <!-- TODO -->
+          <a class='navbar-brand' href='#'><span><img src='./logo.png' style='width:160px;margin-top:-6px;' alt='CrossRef'>&nbsp;API Browser</span></a>
+        </div>
+        <div id='navbar' class='navbar-collapse collapse'>
+          <ul class='nav navbar-nav'>
+            <!-- <li class='active'><a href='#'>Home</a></li> -->
+            <!-- <li><a href='#about'>About</a></li> -->
+            <!-- <li><a href='#contact'>Contact</a></li> -->
+            <!-- <li class='dropdown'>
+              <a href='#' class='dropdown-toggle' data-toggle='dropdown'>Dropdown <span class='caret'></span></a>
+              <ul class='dropdown-menu' role='menu'>
+                <li><a href='#'>Action</a></li>
+                <li><a href='#'>Another action</a></li>
+                <li><a href='#'>Something else here</a></li>
+                <li class='divider'></li>
+                <li class='dropdown-header'>Nav header</li>
+                <li><a href='#'>Separated link</a></li>
+                <li><a href='#'>One more separated link</a></li>
+              </ul>
+            </li> -->
+          </ul>
+          <ul class='nav navbar-nav navbar-right'>
+            <!-- <li><a href='../navbar/'>Default</a></li> -->
+            <!-- <li><a href='../navbar-static-top/'>Static top</a></li> -->
+            
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+    <div class='container' id="content"></div>
+   
+    <script src='./dist/jquery/dist/jquery.js'></script>
+    <script src='./dist/bootstrap/js/bootstrap.min.js'></script>
+
+    <script>
+        window.endpoints = {"works": "http://api.crossref.org/v1/works"};
+
+        window.workFilters = [
+      {id: "until-index-date", name: "Until index date" , valueType: "date", suggest: ["from-index-date"]}, 
+      {id: "from-pub-date", name: "From publication date", valueType: "date", suggest: ["until-pub-date"]}, 
+      {id: "license.version", name: "License version", valueType: "text", suggest: []}, 
+      {id: "license.delay", name: "License delay", valueType: "text", suggest: []}, 
+      {id: "from-deposit-date", name: "From deposit date", valueType: "date", suggest: ["until-deposit-date"]}, 
+      {id: "has-update-policy", name: "Has update policy", valueType: "boolean", suggest: []}, 
+      {id: "until-update-date", name: "Until update date", valueType: "date", suggest: ["from-update-date"]}, 
+      {id: "license.url", name: "License URL", valueType: "text", suggest: []}, 
+      {id: "archive", name: "Archive", valueType: "text", suggest: []}, 
+      {id: "full-text.version", name: "Full text Version", valueType: "text", suggest: []},
+      {id: "orcid", name: "ORCID", valueType: "text", suggest: []}, 
+      {id: "has-update", name: "Has CrossMark update", valueType: "boolean", suggest: []},
+      {id: "funder-name", name: "Funder name", valueType: "text", suggest: []}, 
+      {id: "category-name", name: "Category ame", valueType: "text", suggest: []}, 
+      {id: "award.number", name: "FundRef award number", valueType: "text", suggest: []}, 
+      {id: "prefix", name: "DOI Prefix", valueType: "text", suggest: []}, 
+      {id: "has-funder", name: "Has funder", valueType: "boolean", suggest: []}, 
+      {id: "until-deposit-date", name: "Until deposit date", valueType: "date", suggest: ["from-deposit-date"]}, 
+      {id: "has-funder-doi", name: "Has funder DOI", valueType: "boolean", suggest: []}, 
+      {id: "container-title", name: "Container title", valueType: "text", suggest: []}, 
+      {id: "full-text.application", name: "Full text application", valueType: "text", suggest: []}, 
+      {id: "until-pub-date", name: "Until publication date", valueType: "date", suggest: ["from-pub-date"]}, 
+      {id: "award.funder", name: "FundRef award funder", valueType: "text", suggest: []}, 
+      {id: "has-license", name: "Has license", valueType: "boolean", suggest: []}, 
+      {id: "from-update-date", name: "From update date", valueType: "date", suggest: ["until-update-date"]}, 
+      {id: "has-archive", name: "Has archive", valueType: "boolean", suggest: []}, 
+      {id: "has-orcid", name: "Has ORCID", valueType: "boolean", suggest: []}, 
+      {id: "publisher-name", name: "Publisher name", valueType: "text", suggest: []}, 
+      {id: "doi", name: "DOI", valueType: "text", suggest: []}, 
+      {id: "type-name", name: "Work type name", valueType: "text", suggest: []}, 
+      {id: "update-type", name: "CrossMark update type", valueType: "text", suggest: []}, 
+      {id: "funder", name: "FundRef Funder", valueType: "text", suggest: []}, 
+      {id: "directory", name: "Directory", valueType: "text", suggest: []}, 
+      {id: "from-issued-date", name: "From issued date", valueType: "date", suggest: ["until-issued-date"]}, 
+      {id: "has-award", name: "Has award", valueType: "boolean", suggest: []}, 
+      {id: "alternative-id", name: "Alternative ID", valueType: "text", suggest: []}, 
+      {id: "type", name: "Work type", valueType: "text", suggest: []}, 
+      {id: "full-text.type", name: "Full text type", valueType: "text", suggest: []}, 
+      {id: "has-full-text", name: "Has full text", valueType: "boolean", suggest: []}, 
+      {id: "issn", name: "ISSN", valueType: "text", suggest: []}, 
+      {id: "until-issued-date", name: "Until issued date", valueType: "date", suggest: ["from-issued-date"]}, 
+      {id: "is-update", name: "Is CrossMark update", valueType: "boolean", suggest: []}, 
+      {id: "from-index-date", name: "From index date", valueType: "date", suggest: ["until-index-date"]}, 
+      {id: "updates", name: "Is a CrossMark update to", valueType: "text", suggest: []}, 
+      {id: "has-references", name: "Has references", valueType: "boolean", suggest: []}, 
+      {id: "member", name: "Member" , valueType: "text", suggest: []}
+    ];
+
+    </script>
+
+
+    <script type='text/jsx'>
+      function deleteArrayItem(arr, i) {
+        return arr.slice(0, i).concat(arr.slice(i+1));
+      }
+
+      function getQueryParams(qs) {
+        qs = qs.split("+").join(" ");
+        var params = {};
+        var tokens;
+        var re = /[?&]?([^=]+)=([^&]*)/g;
+        while (tokens = re.exec(qs)) {
+            params[decodeURIComponent(tokens[1])] = decodeURIComponent(tokens[2]);
+        }
+
+        return params;
+      } 
+
+      function parseFilterString(input) {
+        
+        var params = [];
+        var parts = input.split(",");
+        $.each(parts, function(i, part) {
+          var kv = part.split(":");
+          var key = kv[0];
+          var value = kv[1];
+          params.push({type: key, value: value});
+        });
+
+        return params;
+      }
+
+      function formatNumberLength(num, length) {
+        var r = "" + num;
+        while (r.length < length) {
+            r = "0" + r;
+        }
+        return r;
+      }
+
+      var App = React.createClass({
+        getInitialState: function() {
+          return {
+            query: null,
+            response: [],
+            filters: [],
+            queryState: 'done'
+          };
+        },
+
+        componentDidMount: function() {
+          this.updateQueryFromLocationBar();
+          var q = this.constructQuery(this.state.filters);
+          this.fetchFromApi("works", q);
+        },
+
+        updateQueryFromLocationBar: function() {
+          var query = getQueryParams(window.location.hash.substring(1));
+          var filter = query.filter || "";
+          var filters = parseFilterString(filter);
+          this.setState({filters: filters});
+        },
+
+        constructQuery: function(filters) {
+          var query = "";
+
+          // TODO add search
+          if (filters.length > 0) {
+            query = query + "filter=";
+
+            query = query + $.map(filters, function(filter, i) {
+              if (filter.type !== undefined && filter.value !== undefined) {
+                return filter.type + ":" + filter.value;  
+              } else {
+                return null;
+              }
+            }).filter(function(x) { return x !== null;}).join(",");
+          }
+
+          return query;
+        },
+
+        filtersChanged: function(filters) {
+          this.setState({filters, filters});
+          var q = this.constructQuery(filters);
+
+          var entity = "works";
+          var qs = "#?entity=works&" + q;
+          
+          window.history.pushState({q: q}, "", qs);
+
+          this.fetchFromApi("works", q);
+        },
+
+        setApiResponse : function(response) {
+          this.setState({response: response});
+        },
+
+        fetchFromApi: function(entity, query) {
+          var self = this;
+
+          var entityBase = window.endpoints[entity];
+
+          var url = entityBase + "?" + query;
+
+          this.setState({'queryState': 'waiting'});
+
+          $.ajax({
+            url: url,
+            dataType: 'json',
+            type: 'GET',
+            success: function(response) {
+              self.setApiResponse(response.message.items);
+              this.setState({'queryState': 'done'});
+            }.bind(this),
+            error: function(xhr, status, err) {
+              console.error(this.props.url, status, err.toString());
+              this.setState({'queryState': 'done'});
+            }.bind(this)
+          });
+        },
+
+        addFilter() {
+          var newFilter = {type: null, value: null};
+          var filters = $.extend([], this.state.filters);
+          filters.push(newFilter);
+
+          this.setState({filters: filters});
+
+          // Don't update filters, it won't be meaningful until there's an interaction anyway.
+        },
+
+        removeFilter(filterI) {
+          var filters = deleteArrayItem(this.state.filters, filterI);
+          this.setState({filters: filters});
+
+          this.filtersChanged(filters);
+        },
+
+        // Called by the children.
+        setType(filterI, typeIdentifier) {
+          var filters = $.extend([], this.state.filters);
+
+          filters[filterI].type = typeIdentifier;
+
+          this.setState({filters: filters});
+
+          this.filtersChanged(filters);
+
+          // TODO add suggestion
+        },
+
+        setValue(filterI, value) {
+          var filters = $.extend([], this.state.filters);
+
+          filters[filterI].value = value;
+
+          this.setState({filters: filters});
+
+          this.filtersChanged(filters);
+        },
+
+        render: function() {
+          return (
+            <div className='row-inline'>
+              <div className='col-md-12'>
+                <div className='panel panel-default'>
+                  <div className='panel-heading'>
+                    <h3 className='panel-title'>Query</h3>
+                  </div>
+                  <div className='panel-body'>
+                  <QueryControls controller={this} filters={this.state.filters} app={this} />
+                </div>
+              </div>
+
+                <div>
+                  <WorkList items={this.state.response} state={this.state.queryState} />
+                </div>
+              </div>
+            </div>
+          );
+        }
+      });
+
+      var TextInput = React.createClass({
+        handleUpdate: function(event) {
+          this.props.controller.setValue(event.target.value);
+        },
+
+        render: function () {
+          return <div><div className="col-xs-6">
+                  <input type="text" className="form-control" onChange={this.handleUpdate} />
+                 </div></div>
+        }
+      });
+
+      var BooleanInput = React.createClass({
+        componentDidMount: function() {
+          // Because the default un-checked state is meaningful, apply it immediately.
+          this.props.controller.setValue("false");
+        },
+
+        handleUpdate: function(event) {
+          if (event.target.checked === true) {
+            this.props.controller.setValue("true");
+          } else {
+            this.props.controller.setValue("false");
+          }
+        },
+
+        render: function () {
+          return <div><div className="col-xs-6">
+                   <input type="checkbox" className="form-control" onChange={this.handleUpdate} />
+                 </div></div>
+        }
+      });
+
+      var DateInput = React.createClass({
+        getInitialState: function() {
+          var year = null;
+          var month = null;
+          var day = null;
+
+          if (this.props.value === null) {
+            year = new Date().getFullYear();
+          } else {
+            var ymd = this.props.value.split("-");
+            year = ymd[0] || new Date().getFullYear();
+            month = ymd[1] || null;
+            day = ymd[2] || null;  
+          }
+          
+          return {year: year, month: month, day: day};
+        },
+
+        handleUpdate: function(event) {
+          var year = this.state.year;
+          var month = this.state.month;
+          var day = this.state.day;
+
+          var value = event.target.value;
+          
+          if (value === "") {
+            value = null;
+          }
+
+          if (event.target.name === "year") {
+            year = value;
+            this.setState({year: value});
+          } if (event.target.name === "month") {
+            month = value;
+
+            if (value === null) {
+              this.setState({month: value});
+            } else {
+              day = null;
+              this.setState({day: '', month: value});
+            }
+            
+          } if (event.target.name === "day") {
+
+            day = value;
+            this.setState({day: value});
+          }
+
+
+          this.reportUpdate(year, month, day);
+        },
+
+        reportUpdate: function(year, month, day) {
+          console.log(year, month, day)
+
+          // Array of [year], [year, month] or [year, month, day].
+          var dateValue = "" + year;
+          
+          if (month !== null) {
+            dateValue += "-" + month;
+
+            if (day !== null) {
+              dateValue += "-" + day;
+            };
+          };
+
+          this.props.controller.setValue(dateValue);
+        },
+
+        render: function () {
+          var minYear = 1800;
+          var maxYear = new Date().getFullYear() + 2;
+          var minMonth = 1;
+          var maxMonth = 12;
+          var minDay = 1;
+          var maxDay = 31;
+
+          var showYear = true;
+          var showMonth = false;
+          var showDay = false;
+
+          var years = [];
+          for (var i=minYear; i <= maxYear; i++) {
+            years.push(<option key={i}>{formatNumberLength(i, 4)}</option>)
+          };
+
+          var months = [];
+          for (var i=minMonth; i <= maxMonth; i++) {
+            months.push(<option key={i}>{formatNumberLength(i, 2)}</option>)
+          };
+
+          var days = [];
+          for (var i=minDay; i <= maxDay; i++) {
+            days.push(<option key={i}>{formatNumberLength(i, 2)}</option>)
+          };
+
+          return <div>
+            <div className="col-xs-2">
+              <select name="year" value={this.state.year} className="form-control" onChange={this.handleUpdate}>
+                {years}
+              </select>
+              </div>
+              <div className="col-xs-2">
+              <select name="month" value={this.state.month} className="form-control" onChange={this.handleUpdate}>
+                <option></option>
+                {months}
+              </select>
+              </div>
+              <div className="col-xs-2">
+              <select name="day" value={this.state.day} className="form-control" onChange={this.handleUpdate}>
+                <option></option>
+                {days}
+              </select>
+            </div>
+          </div>
+
+        }
+      });
+
+      // Kind of polymorphic.
+      var QueryControl = React.createClass({
+        getInitialState: function() {
+          return {
+            // Created in edit mode.
+            state: "editing"
+          }
+        },
+
+        setType: function(event) {
+          if (event.target.name === "type") {
+            var typ = event.target.value;
+            this.props.controller.setType(this.props.i, typ);
+          }
+        },
+
+        setValue: function(value) {
+          // TODO VALIDATE 
+          this.props.controller.setValue(this.props.i, value);
+        },
+
+        render: function() {
+          var self = this;
+          
+          var filterType = null;
+          if (this.props.filter.type !== null) {
+            filterType = window.workFilters.filter(function(typ) {
+              return (typ.id === self.props.filter.type) }
+            )[0] || null;
+          }
+          
+          // A value field depending depending on the type of the filter.
+          // By default empty waiting for type.
+          
+          var valueElement = <span></span>;
+          if (filterType !== null) {
+            switch (filterType.valueType) {
+              case "text": valueElement = <TextInput controller={self} value={this.props.filter.value} />; break;
+              case "boolean": valueElement = <BooleanInput controller={self} value={this.props.filter.value} />; break;
+              case "date": valueElement = <DateInput controller={self} value={this.props.filter.value} />; break;
+            }  
+          }
+          
+          return <div className="row">
+            <div className="col-xs-3">
+              <select onChange={this.setType} name="type" value={this.props.filter.type} className="form-control">
+                  <option value='none' selected disabled>Select...</option> 
+                  {window.workFilters.map(function(typ, i) {
+                    return <option key={i} value={typ.id}>{typ.name}</option>
+                  })}
+                </select>
+              </div>
+              
+              {valueElement}
+              
+              <div className="col-xs-3">
+              <button type="button" className="btn" onClick={this.props.controller.removeFilter.bind(null, this.props.i)}>
+                  <span className="glyphicon glyphicon-minus" aria-hidden="true"></span>
+                </button>
+            </div>
+          </div>
+
+          // return <div className="form-group">
+          //     <label className="col-sm-2 control-label">Type</label>
+          //     <div className="col-sm-6">
+          //       <select onChange={this.setType} name="type" value={this.props.filter.type} className="form-control">
+          //         <option value='none' selected disabled>Select...</option> 
+          //         {window.workFilters.map(function(typ, i) {
+          //           return <option key={i} value={typ.id}>{typ.name}</option>
+          //         })}
+          //       </select>
+          //     </div>
+          //     <div className="col-sm-3">
+          //       <button type="button" className="btn" onClick={this.props.controller.removeFilter.bind(null, this.props.i)}>
+          //         <span className="glyphicon glyphicon-minus" aria-hidden="true"></span>
+          //       </button>
+          //     </div>
+
+          //     <label className="col-sm-2 control-label">Value</label>
+          //     <div className="col-sm-6">
+          //       {valueElement}
+          //     </div>
+          // </div>
+        }
+      });
+
+      var QueryControls = React.createClass({
+        addFilter() {
+          this.props.app.addFilter();
+        },
+
+        removeFilter(filterI) {
+          this.props.app.removeFilter(filterI);
+        },
+
+        // Called by the children.
+        setType(filterI, typeIdentifier) {
+          this.props.app.setType(filterI, typeIdentifier)
+        },
+
+        setValue(filterI, value) {
+          this.props.app.setValue(filterI, value);
+        },
+
+        render: function() {
+          var self = this;
+        
+          return <div><form className="form-horizontal">
+            {this.props.filters.map(function (filter, i) {
+              return <div key={i}>
+                <QueryControl filter={filter} i={i} controller={self} />
+              </div>
+            })}
+          </form>
+          <button type="button" className="btn" onClick={self.addFilter}>
+            <span className="glyphicon glyphicon-plus" aria-hidden="true"></span> Add filter
+          </button>
+          </div>
+        }
+      });
+
+      var WorkList = React.createClass({
+        render: function() {
+          
+          var style = {};
+
+          if (this.props.state === "waiting") {
+            style = {"color": "grey"};
+          }
+
+          return <ul style={style}>
+              {this.props.items.map(function(item, i) {
+                return <li key={i}>
+                <p className="lead">{item.title}</p>
+                <p>{item.DOI}</p>
+                </li>
+              })}
+            </ul>
+        }
+      });
+     
+      React.render(
+        <App apiBase='./api-mock'/>,
+        document.getElementById('content')
+      );
+    </script>
+  </body>
+</html>
+
+
+
+
+<!-- TODO
+
+suggest next filter
+
+
+-->
